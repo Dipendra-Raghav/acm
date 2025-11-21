@@ -101,36 +101,9 @@ module "private_certificate" {
 | certificate_arn | ARN of the ACM certificate |
 | certificate_id | ID of the ACM certificate |
 | certificate_domain_name | Domain name of the certificate |
-| certificate_status | Status of the certificate (PENDING_VALIDATION, ISSUED, etc.) |
+| certificate_status | Status of the certificate |
 | certificate_type | Type of certificate (AMAZON_ISSUED or PRIVATE) |
-| domain_validation_options | DNS validation records (for DNS validation method) |
-
-## Certificate Validation
-
-### DNS Validation
-
-The module creates certificates with DNS validation by default. For validation:
-
-1. Certificate is created with status `PENDING_VALIDATION`
-2. Use the `domain_validation_options` output to get DNS records
-3. Create these DNS records in your DNS provider (Route53, BlueCat, etc.)
-4. AWS ACM automatically validates once DNS records are detected
-
-```hcl
-output "validation_records" {
-  description = "Create these DNS records to validate the certificate"
-  value       = module.acm_certificate.domain_validation_options
-}
-```
-
-### EMAIL Validation
-
-Set `validation_method = "EMAIL"` to use email validation. AWS will send validation emails to:
-- admin@yourdomain.com
-- administrator@yourdomain.com
-- hostmaster@yourdomain.com
-- postmaster@yourdomain.com
-- webmaster@yourdomain.com
+| domain_validation_options | Domain validation options (use with separate Route53/DNS module) |
 
 ## Certificate Types
 
@@ -161,14 +134,6 @@ certificate_authority_arn = "arn:aws:acm-pca:..."
 - **CloudFront:** Certificates must be in `us-east-1`
 - **ALB/NLB:** Certificates must be in same region as load balancer
 - **API Gateway:** Regional certs in same region, edge certs in `us-east-1`
-
-### Validation Methods
-
-| Method | Best For | Speed | Automation |
-|--------|----------|-------|------------|
-| DNS | Production | Fast (minutes) | Automatable |
-| EMAIL | Testing | Slow (manual) | Manual approval needed |
-| NONE | Private certs only | N/A | No validation |
 
 ### Wildcard Certificates
 
@@ -207,16 +172,6 @@ See `examples/` directory for complete working examples:
 
 ## Troubleshooting
 
-### Certificate Stuck in PENDING_VALIDATION
-
-**Cause:** DNS validation records not created  
-**Solution:** Create the DNS records from `domain_validation_options` output
-
-### "Domain does not exist" Error
-
-**Cause:** Using non-existent domain for testing  
-**Solution:** Use a real domain you own, or use EMAIL validation for testing
-
 ### Private Certificate Authority Not Found
 
 **Cause:** Invalid PCA ARN or PCA not active  
@@ -224,11 +179,10 @@ See `examples/` directory for complete working examples:
 
 ## Best Practices
 
-1. **Use DNS validation** - Faster and can be automated
-2. **Use wildcard certificates** - For multiple subdomains
-3. **Tag appropriately** - All mandatory tags must be provided
-4. **Monitor expiration** - Set up alerts for certificate renewal
-5. **Use private certs** - Only for internal services (cost consideration)
+1. **Use wildcard certificates** - For multiple subdomains
+2. **Tag appropriately** - All mandatory tags must be provided
+3. **Use private certs** - Only for internal services (cost consideration)
+4. **Separate concerns** - Validation is handled by Route53/DNS modules
 
 ## Module Structure
 
