@@ -1,13 +1,12 @@
 # Certificate Configuration
 certificate_name = "test-certificate"
-domain_name      = "test.example.com"
+domain_name      = "example.com"
 
 # Subject Alternative Names (SANs)
 subject_alternative_names = [
-  "*.test.example.com"
+  "*.example.com"
 ]
 
-# Validation Method
 validation_method = "DNS"
 
 # Private Certificate (optional - leave null for public certificate)

@@ -18,6 +18,6 @@ resource "aws_acm_certificate" "main" {
   )
 
   lifecycle {
-    ignore_changes = [tags]
+    ignore_changes        = [tags]
   }
 }
