@@ -105,46 +105,6 @@ module "private_certificate" {
 | certificate_type | Type of certificate (AMAZON_ISSUED or PRIVATE) |
 | domain_validation_options | Domain validation options (use with separate Route53/DNS module) |
 
-## Certificate Types
-
-### Public Certificates (Default)
-
-```hcl
-certificate_authority_arn = null  # or omit this variable
-```
-
-- Free
-- Requires validation (DNS or EMAIL)
-- Use for public websites, APIs
-
-### Private Certificates
-
-```hcl
-certificate_authority_arn = "arn:aws:acm-pca:..."
-```
-
-- Costs $0.75/month per certificate + PCA costs (~$400/month)
-- No validation required
-- Use for internal services
-
-## Important Notes
-
-### Regional Requirements
-
-- **CloudFront:** Certificates must be in `us-east-1`
-- **ALB/NLB:** Certificates must be in same region as load balancer
-- **API Gateway:** Regional certs in same region, edge certs in `us-east-1`
-
-### Wildcard Certificates
-
-```hcl
-domain_name = "example.com"
-subject_alternative_names = [
-  "*.example.com"      # All subdomains
-  "*.api.example.com"  # All API subdomains
-]
-```
-
 ### Tag Management
 
 The module automatically applies these tags to all certificates:
@@ -163,19 +123,6 @@ The module automatically applies these tags to all certificates:
 
 **Note:** Tag changes outside Terraform are ignored (lifecycle: `ignore_changes = [tags]`)
 
-## Examples
-
-See `examples/` directory for complete working examples:
-
-- **basic/** - Simple certificate with manual DNS validation
-- **private-certificate/** - Private certificate using AWS Private CA
-
-## Troubleshooting
-
-### Private Certificate Authority Not Found
-
-**Cause:** Invalid PCA ARN or PCA not active  
-**Solution:** Verify PCA exists and is in ACTIVE state
 
 ## Best Practices
 
@@ -198,11 +145,3 @@ acm/
     ├── basic/
     └── private-certificate/
 ```
-
-## Support
-
-For issues or questions, contact the Platform Engineering team.
-
-## License
-
-Internal use only
